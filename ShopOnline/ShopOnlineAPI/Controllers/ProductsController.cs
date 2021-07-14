@@ -34,6 +34,17 @@ namespace ShopOnlineAPI.Controllers
             return Ok(productViewModelListMapped);
         }
 
+        [HttpGet]
+        [Route("SearchProduct")]
+        public async Task<IActionResult> SearchProduct(string keyWords)
+        {
+            var productList = await productService.GetProductListByKeyWords(keyWords);
+
+            List<ProductViewModel> productViewModelListMapped = mapper.Map<List<ProductViewModel>>(productList);
+
+            return Ok(productViewModelListMapped);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {

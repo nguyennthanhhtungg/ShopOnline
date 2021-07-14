@@ -16,9 +16,10 @@ namespace ShopOnlineAPI.Models
         public string OrderNo { get; set; }
         public int CustomerId { get; set; }
         public int EmployeeId { get; set; }
-        public DateTime LastUpdated { get; set; }
+        public DateTime UpdatedDate { get; set; }
         public double TotalMoney { get; set; }
         public int TotalProduct { get; set; }
+        public string Status { get; set; }
 
         public virtual Customer Customer { get; set; }
         public virtual Employee Employee { get; set; }

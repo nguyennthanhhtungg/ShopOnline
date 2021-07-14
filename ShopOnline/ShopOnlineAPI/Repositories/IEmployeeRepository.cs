@@ -8,5 +8,6 @@ namespace ShopOnlineAPI.Repositories
 {
     public interface IEmployeeRepository : IGenericRepository<Employee>
     {
+        Task<List<int>> GetEmployeeIdList();
     }
 }

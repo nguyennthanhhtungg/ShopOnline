@@ -34,6 +34,11 @@ namespace ShopOnlineAPI.Services
             return product;
         }
 
+        public async Task<List<Product>> GetProductListByKeyWords(string keywords)
+        {
+            return await productRepository.GetProductListByKeyWords(keywords);
+        }
+
         public async Task<Product> Update(Product product)
         {
             await productRepository.Update(product);

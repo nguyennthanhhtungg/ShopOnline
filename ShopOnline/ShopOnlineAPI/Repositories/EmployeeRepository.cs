@@ -1,4 +1,5 @@
-﻿using ShopOnlineAPI.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using ShopOnlineAPI.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,6 +11,13 @@ namespace ShopOnlineAPI.Repositories
     {
         public EmployeeRepository(ShopOnlineDBContext context) : base(context)
         {
+        }
+
+        //Get EmployeeId available for Order
+        public async Task<List<int>> GetEmployeeIdList()
+        {
+            return await context.Set<Employee>()
+                .Select(emp => emp.EmployeeId).ToListAsync();
         }
     }
 }

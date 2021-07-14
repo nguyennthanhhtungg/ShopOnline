@@ -21,13 +21,16 @@ namespace ShopOnlineAPI.ViewModels
         public int EmployeeId { get; set; }
 
         [Required]
-        public DateTime LastUpdated { get; set; }
+        public DateTime UpdatedDate { get; set; }
 
         [Required]
         public double TotalMoney { get; set; }
 
         [Required]
         public int TotalProduct { get; set; }
+
+        [Required]
+        public string Status { get; set; }
 
         public List<OrderDetailViewModel> OrderDetails { get; set; }
     }
