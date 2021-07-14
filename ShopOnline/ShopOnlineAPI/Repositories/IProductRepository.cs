@@ -8,5 +8,6 @@ namespace ShopOnlineAPI.Repositories
 {
     public interface IProductRepository : IGenericRepository<Product>
     {
+        Task<List<Product>> GetProductListByKeyWords(string keywords);
     }
 }

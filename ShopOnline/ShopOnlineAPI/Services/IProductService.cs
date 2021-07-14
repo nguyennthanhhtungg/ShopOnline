@@ -15,5 +15,7 @@ namespace ShopOnlineAPI.Services
         Task<Product> Add(Product product);
 
         Task<Product> Update(Product product);
+
+        Task<List<Product>> GetProductListByKeyWords(string keywords);
     }
 }
