@@ -212,6 +212,10 @@ namespace ShopOnlineAPI.Models
                     .IsRequired()
                     .HasMaxLength(200);
 
+                entity.Property(e => e.ProductNameNoSign)
+                    .IsRequired()
+                    .HasMaxLength(200);
+
                 entity.Property(e => e.ShortDiscription)
                     .IsRequired()
                     .HasMaxLength(500);

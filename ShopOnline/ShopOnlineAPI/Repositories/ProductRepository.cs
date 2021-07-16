@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShopOnlineAPI.Models;
+using ShopOnlineAPI.Ultilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,10 @@ namespace ShopOnlineAPI.Repositories
 
             StringBuilder sqlWhereConditions = new StringBuilder();
 
-            for(int i = 0; i < words.Length; i++)
+
+            //With Sign
+            sqlWhereConditions.Append("(");
+            for (int i = 0; i < words.Length; i++)
             {
                 sqlWhereConditions.Append($"ProductName LIKE '%{words[i]}%' ");
 
@@ -32,6 +36,24 @@ namespace ShopOnlineAPI.Repositories
                     sqlWhereConditions.Append("AND ");
                 }
             }
+            sqlWhereConditions.Append(")");
+
+
+            sqlWhereConditions.Append(" OR ");
+            words = ConvertToUnSign.Convert(keywords).Split(' ');
+
+            //With NoSign
+            sqlWhereConditions.Append("(");
+            for (int i = 0; i < words.Length; i++)
+            {
+                sqlWhereConditions.Append($"ProductNameNoSign LIKE '%{words[i]}%' ");
+
+                if (i < words.Length - 1)
+                {
+                    sqlWhereConditions.Append("AND ");
+                }
+            }
+            sqlWhereConditions.Append(")");
 
 
             return await context.Set<Product>()
