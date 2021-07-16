@@ -13,13 +13,16 @@ namespace ShopOnlineAPI.Repositories
         //Get EmployeeId List by Date
         Task<List<int>> GetEmployeeIdListByDate(DateTime date);
 
-        //Get EmployeeId along with number of new status List in Cancelled Status by Date
-        Task<Dictionary<int, int>> GetEmployeeIdAlongNewStatusNumberListCancelledStatusByDate(DateTime date);
+        //Get EmployeeId List in Cancelled Status by Date
+        Task<IList<int>> GetEmployeeIdListCancelledStatusByDate(DateTime date);
 
-        //Get EmployeeId along with number of new status List in Completed Status by Date
-        Task<Dictionary<int, int>> GetEmployeeIdAlongNewStatusNumberListCompletedStatusByDate(DateTime date);
+        //Get EmployeeId List in Completed Status by Date
+        Task<IList<int>> GetEmployeeIdListCompletedStatusByDate(DateTime date);
 
-        //Get EmployeeId along with number of new status List in In Progress Status by Descending Date
-        Task<List<int>> GetEmployeeIdAlongNewStatusNumberListInProgressStatusAndDescendingDate();
+        //Get EmployeeId List in InProgress Status and Increasing Date
+        Task<IList<int>> GetEmployeeIdListInProgressStatusAndDescendingDate();
+
+        //Get EmployeeId List in New Status
+        Task<IList<int>> GetEmployeeIdListNewStatus();
     }
 }

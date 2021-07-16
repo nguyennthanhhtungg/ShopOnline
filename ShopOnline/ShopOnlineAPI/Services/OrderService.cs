@@ -1,4 +1,5 @@
-﻿using ShopOnlineAPI.Models;
+﻿using Newtonsoft.Json;
+using ShopOnlineAPI.Models;
 using ShopOnlineAPI.Repositories;
 using System;
 using System.Collections.Generic;
@@ -11,15 +12,13 @@ namespace ShopOnlineAPI.Services
     {
         private readonly IOrderRepository orderRepository;
         private readonly IOrderDetailRepository orderDetailRepository;
-        private readonly IProductRepository productRepository;
         private readonly IEmployeeRepository employeeRepository;
 
         public OrderService(IOrderRepository orderRepository, IOrderDetailRepository orderDetailRepository, 
-            IProductRepository productRepository, IEmployeeRepository employeeRepository)
+            IEmployeeRepository employeeRepository)
         {
             this.orderRepository = orderRepository;
             this.orderDetailRepository = orderDetailRepository;
-            this.productRepository = productRepository;
             this.employeeRepository = employeeRepository;
         }
 
@@ -34,10 +33,26 @@ namespace ShopOnlineAPI.Services
             //Get EmployeeId List
             var employeeIdList = await employeeRepository.GetEmployeeIdList();
 
-            //Get EmployeeId List unavailable today
+            Console.WriteLine(JsonConvert.SerializeObject(employeeIdList));
+
+            //Get EmployeeId List in InProgress Status
+            var inProgressEmployeeIdList = await orderRepository.GetEmployeeIdListInProgressStatusAndDescendingDate();
+
+            Console.WriteLine(JsonConvert.SerializeObject(inProgressEmployeeIdList));
+
+            //Get EmployeeId List Unavailable today
             var unavailableEmployeeIdList = await orderRepository.GetEmployeeIdListByDate(DateTime.Now);
 
-            if (unavailableEmployeeIdList.Count != 0)
+            unavailableEmployeeIdList.AddRange(inProgressEmployeeIdList);
+            unavailableEmployeeIdList = unavailableEmployeeIdList.Distinct().ToList();
+
+
+            Console.WriteLine(JsonConvert.SerializeObject(unavailableEmployeeIdList));
+
+
+
+
+            if (employeeIdList.Count != unavailableEmployeeIdList.Count)
             {
                 foreach (int id in employeeIdList)
                 {
@@ -52,56 +67,56 @@ namespace ShopOnlineAPI.Services
                     }
                 }
             }
-
-            if (order.EmployeeId == 0)
+            else
             {
-                //Get EmployeeId along with number of new status List with Cancelled Status today
-                var cancelledEmployeeIdList = await orderRepository.GetEmployeeIdAlongNewStatusNumberListCancelledStatusByDate(DateTime.Now);
+                //Get EmployeeId List in Cancelled Status today
+                var cancelledEmployeeIdList = await orderRepository.GetEmployeeIdListCancelledStatusByDate(DateTime.Now);
 
-                if(cancelledEmployeeIdList.Count != 0 && cancelledEmployeeIdList.First().Value == 0)
+                if(cancelledEmployeeIdList.Count != 0)
                 {
-                    order.EmployeeId = cancelledEmployeeIdList.First().Key;
+                    order.EmployeeId = cancelledEmployeeIdList[0];
                 }
-
-
-                if(order.EmployeeId == 0)
+                else
                 {
-                    //Get EmployeeId along with number of new status List with Complted Status today
-                    var completedEmployeeIdList = await orderRepository.GetEmployeeIdAlongNewStatusNumberListCompletedStatusByDate(DateTime.Now);
+                    //Get EmployeeId List in Completed Status today
+                    var completedEmployeeIdList = await orderRepository.GetEmployeeIdListCompletedStatusByDate(DateTime.Now);
 
-                    if (completedEmployeeIdList.Count != 0 && completedEmployeeIdList.First().Value == 0)
+                    if (completedEmployeeIdList.Count != 0)
                     {
-                        order.EmployeeId = completedEmployeeIdList.First().Value;
+                        order.EmployeeId = completedEmployeeIdList[0];
                     }
-
-                    if (order.EmployeeId == 0)
+                    else
                     {
-                        //Get EmployeeId along with number of new status List with In Progress Status and Descending Date
-                        var inProgressEmployeeIdList = await orderRepository.GetEmployeeIdAlongNewStatusNumberListInProgressStatusAndDescendingDate();
-
-                        if (inProgressEmployeeIdList.Count != 0)
+                        if(inProgressEmployeeIdList.Count == 0)
                         {
-                            order.EmployeeId = inProgressEmployeeIdList.First();
+                            return order;
                         }
-
-                        if (order.EmployeeId == 0 && cancelledEmployeeIdList.Count != 0)
+                        else
                         {
-                            order.EmployeeId = cancelledEmployeeIdList.First().Key;
-                        }
+                            //Get EmployeeId List in New Status
+                            var newEmployeeIdList = await orderRepository.GetEmployeeIdListNewStatus();
 
-                        if (order.EmployeeId == 0 && completedEmployeeIdList.Count != 0)
-                        {
-                            order.EmployeeId = completedEmployeeIdList.First().Key;
+                            foreach (int id in inProgressEmployeeIdList)
+                            {
+                                if (newEmployeeIdList.Contains(id))
+                                {
+                                    continue;
+                                }
+                                else
+                                {
+                                    order.EmployeeId = id;
+                                    break;
+                                }
+                            }
                         }
-                    }
-
-                    if (order.EmployeeId == 0)
-                    {
-                        order.EmployeeId = employeeIdList.First();
                     }
                 }
             }
 
+            if(order.EmployeeId == 0)
+            {
+                return order;
+            }
 
             await orderRepository.Add(order);
 
