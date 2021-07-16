@@ -62,9 +62,17 @@ namespace ShopOnlineAPI.Controllers
 
                 var order = await orderService.Add(orderMapped, orderDetailListMapped);
 
-                OrderViewModel orderViewModelMapped = mapper.Map<OrderViewModel>(order);
+                if(order.OrderId == 0)
+                {
+                    return Ok("Sorry, Employee is busy!");
+                }
+                else
+                {
 
-                return Ok(orderViewModelMapped);
+                    OrderViewModel orderViewModelMapped = mapper.Map<OrderViewModel>(order);
+
+                    return Ok(orderViewModelMapped);
+                }
             }
             catch (Exception e)
             {

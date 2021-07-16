@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using ShopOnlineAPI.Models;
 using System;
 using System.Collections.Generic;
@@ -29,99 +30,88 @@ namespace ShopOnlineAPI.Repositories
                 .ToListAsync<int>();
         }
 
-        //Get EmployeeId along with number of new status List in Cancelled Status by Date
-        public async Task<Dictionary<int, int>> GetEmployeeIdAlongNewStatusNumberListCancelledStatusByDate(DateTime date)
+        //Get EmployeeId List in Cancelled Status by Date
+        public async Task<IList<int>> GetEmployeeIdListCancelledStatusByDate(DateTime date)
         {
             var orders = await context.Set<Order>()
                 .Where(o => o.UpdatedDate.Date == date.Date)
+                .OrderBy(o => o.OrderId)
                 .ToListAsync();
 
-            Dictionary<int, int> employeeIdAlongNewStatusNumberList = new Dictionary<int, int>();
+            IList<int> employeeIdList = new List<int>();
 
-            foreach(var order in orders)
+            foreach (var order in orders)
             {
-                if(order.Status == "Cancelled")
+                if (order.Status == "Cancelled")
                 {
-                    if (employeeIdAlongNewStatusNumberList.ContainsKey(order.EmployeeId))
+                    if (employeeIdList.Contains(order.EmployeeId))
                     {
                         continue;
                     }
                     else
                     {
-                        employeeIdAlongNewStatusNumberList.Add(order.EmployeeId, 0);
-                    }
-                }
-                else if(order.Status == "New")
-                {
-                    if (employeeIdAlongNewStatusNumberList.ContainsKey(order.EmployeeId))
-                    {
-                        employeeIdAlongNewStatusNumberList[order.EmployeeId] += 1;
-                    }
-                    else
-                    {
-                        continue;
+                        employeeIdList.Add(order.EmployeeId);
                     }
                 }
                 else
                 {
-                    employeeIdAlongNewStatusNumberList.Remove(order.EmployeeId);
+                    employeeIdList.Remove(order.EmployeeId);
                 }
             }
 
-            return employeeIdAlongNewStatusNumberList.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            return employeeIdList;
         }
 
 
-        //Get EmployeeId along with number of new status List in Completed Status by Date
-        public async Task<Dictionary<int, int>> GetEmployeeIdAlongNewStatusNumberListCompletedStatusByDate(DateTime date)
+        //Get EmployeeId List in Completed Status by Date
+        public async Task<IList<int>> GetEmployeeIdListCompletedStatusByDate(DateTime date)
         {
             var orders = await context.Set<Order>()
                 .Where(o => o.UpdatedDate.Date == date.Date)
+                .OrderBy(o => o.OrderId)
                 .ToListAsync();
 
-            Dictionary<int, int> employeeIdAlongNewStatusNumberList = new Dictionary<int, int>();
+            IList<int> employeeIdList = new List<int>();
 
 
             foreach (var order in orders)
             {
                 if (order.Status == "Completed")
                 {
-                    if (employeeIdAlongNewStatusNumberList.ContainsKey(order.EmployeeId))
+                    if (employeeIdList.Contains(order.EmployeeId))
                     {
                         continue;
                     }
                     else
                     {
-                        employeeIdAlongNewStatusNumberList.Add(order.EmployeeId, 0);
-                    }
-                }
-                else if (order.Status == "New")
-                {
-                    if (employeeIdAlongNewStatusNumberList.ContainsKey(order.EmployeeId))
-                    {
-                        employeeIdAlongNewStatusNumberList[order.EmployeeId] += 1;
-                    }
-                    else
-                    {
-                        continue;
+                        employeeIdList.Add(order.EmployeeId);
                     }
                 }
                 else
                 {
-                    employeeIdAlongNewStatusNumberList.Remove(order.EmployeeId);
+                    employeeIdList.Remove(order.EmployeeId);
                 }
             }
 
-            return employeeIdAlongNewStatusNumberList.OrderBy(x => x.Value).ToDictionary(x => x.Key, x => x.Value);
+            return employeeIdList;
         }
 
 
-        //Get EmployeeId List in In Progress Status
-        public async Task<List<int>> GetEmployeeIdAlongNewStatusNumberListInProgressStatusAndDescendingDate()
+        //Get EmployeeId List in InProgress Status and Increasing Date
+        public async Task<IList<int>> GetEmployeeIdListInProgressStatusAndDescendingDate()
         {
             return await context.Set<Order>()
                 .Where(o => o.Status == "In Progress")
-                .OrderByDescending(o => o.UpdatedDate)
+                .OrderBy(o => o.UpdatedDate)
+                .Select(o => o.EmployeeId)
+                .ToListAsync<int>();
+        }
+
+        //Get EmployeeId List in New Status
+        public async Task<IList<int>> GetEmployeeIdListNewStatus()
+        {
+            return await context.Set<Order>()
+                .Where(o => o.Status == "New")
                 .Select(o => o.EmployeeId)
                 .ToListAsync<int>();
         }
