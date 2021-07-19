@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ShopOnlineAPI.Models;
+using ShopOnlineAPI.Ultilities;
 using ShopOnlineAPI.ViewModels;
 
 namespace TaskAssignment.Mappings
@@ -8,7 +9,11 @@ namespace TaskAssignment.Mappings
     {
         public MappingProfile()
         {
-            CreateMap<ProductViewModel, Product>().ReverseMap();
+            CreateMap<ProductViewModel, Product>()
+                 .ForMember(dest => dest.ProductNameNoSign, source => source.MapFrom(source => ConvertToUnSign.Convert(source.ProductName)));
+
+            CreateMap<Product, ProductViewModel>();
+
             CreateMap<CategoryViewModel, Category>().ReverseMap();
             CreateMap<SupplierViewModel, Supplier>().ReverseMap();
             CreateMap<CustomerViewModel, Customer>().ReverseMap();

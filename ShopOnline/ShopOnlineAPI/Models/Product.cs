@@ -30,6 +30,7 @@ namespace ShopOnlineAPI.Models
         public int CategoryId { get; set; }
         public int SupplierId { get; set; }
         public double Tax { get; set; }
+        public string ProductNameNoSign { get; set; }
 
         public virtual Category Category { get; set; }
         public virtual Supplier Supplier { get; set; }
