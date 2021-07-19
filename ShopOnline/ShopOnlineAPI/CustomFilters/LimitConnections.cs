@@ -21,6 +21,8 @@ namespace ShopOnlineAPI.CustomFilters
         public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
             count++;
+            Console.WriteLine(count);
+            Console.WriteLine(timer.Elapsed.TotalSeconds);
             if (timer.Elapsed.TotalSeconds > 15 || (timer.Elapsed.TotalSeconds <= 15 && count <= int.Parse(configuration["MaxConnectionsPerServer"].ToString())))
             {
                 if (timer.Elapsed.TotalSeconds > 15)
