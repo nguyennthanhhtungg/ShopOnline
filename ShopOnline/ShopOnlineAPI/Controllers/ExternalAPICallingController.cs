@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Internal;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using ShopOnlineAPI.CustomFilters;
 using System;
+using System.Diagnostics;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -12,23 +14,14 @@ namespace ShopOnlineAPI.Controllers
     [ApiController]
     public class ExternalAPICallingController : ControllerBase
     {
-        //private readonly IConfiguration configuration;
+        private readonly IConfiguration configuration;
+        private readonly AsyncLock _mutex = new AsyncLock();
 
-        //private readonly HttpClientHandler httpClientHandler;
 
-        //private readonly HttpClient httpClient;
-
-        //public ExternalAPICallingController(IConfiguration configuration)
-        //{
-        //    this.configuration = configuration;
-
-            //httpClientHandler = new HttpClientHandler
-            //{
-            //    MaxConnectionsPerServer = 1
-            // };
-
-            //httpClient = new HttpClient(httpClientHandler);
-        //}
+        public ExternalAPICallingController(IConfiguration configuration)
+        {
+            this.configuration = configuration;
+        }
 
         [HttpGet]
         [LimitConnections]
@@ -36,24 +29,30 @@ namespace ShopOnlineAPI.Controllers
         {
             try
             {
-                HttpClient httpClient = new HttpClient();
-                HttpResponseMessage response = await httpClient.GetAsync("http://localhost:57622/employee");
+                using (await _mutex.LockAsync())
+                {
 
-                //response.EnsureSuccessStatusCode();
+                    HttpClient httpClient = new HttpClient();
+                    HttpResponseMessage response = await httpClient.GetAsync("http://localhost:57622/employee");
 
-                string responseBody = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseBody);
+                    response.EnsureSuccessStatusCode();
+
+                    string responseBody = await response.Content.ReadAsStringAsync();
+
+                    httpClient.Dispose();
+
+                    return Ok(responseBody);
+
+                }
+
             }
             catch(HttpRequestException e)
             {
                 Console.WriteLine("\nException Caught!");
                 Console.WriteLine("Message :{0} ", e.Message);
+
+                return Ok("Server is error!");
             }
-
-            //socketsHttpHandler.Dispose();
-            //httpClient.Dispose();
-
-            return Ok();
         }
     }
 }
