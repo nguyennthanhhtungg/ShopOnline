@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,10 +15,10 @@ namespace ShopOnlineAPI.ViewModels
         public string ProductName { get; set; }
 
         [Required]
-        public string ShortDiscription { get; set; }
+        public string ShortDescription { get; set; }
 
         [Required]
-        public string DetailDiscription { get; set; }
+        public string DetailDescription { get; set; }
 
         [Required]
         public string ProductCode { get; set; }
@@ -52,5 +53,8 @@ namespace ShopOnlineAPI.ViewModels
 
         [Required]
         public double Tax { get; set; }
+
+        [Required]
+        public IFormFile Image { get; set; }
     }
 }

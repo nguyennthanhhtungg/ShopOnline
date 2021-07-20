@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
+using Microsoft.AspNetCore.Http;
 using ShopOnlineAPI.Models;
 using ShopOnlineAPI.Ultilities;
 using ShopOnlineAPI.ViewModels;
+using System.IO;
 
 namespace TaskAssignment.Mappings
 {
@@ -10,9 +12,12 @@ namespace TaskAssignment.Mappings
         public MappingProfile()
         {
             CreateMap<ProductViewModel, Product>()
-                 .ForMember(dest => dest.ProductNameNoSign, source => source.MapFrom(source => ConvertToUnSign.Convert(source.ProductName)));
+                 .ForMember(dest => dest.ProductNameNoSign, source => source.MapFrom(source => ConvertToUnSign.Convert(source.ProductName)))
+                 .ForMember(dest => dest.ImageName, source => source.MapFrom(source => GenerateNewImageFileName.Generate(source.Image)))
+                 .ForMember(dest => dest.ImageData, source => source.MapFrom(source => ConvertIFormFileToByteArray.Convert(source.Image)));
 
-            CreateMap<Product, ProductViewModel>();
+            CreateMap<Product, ProductViewModel>()
+                .ForMember(dest => dest.Image, source => source.MapFrom(source => new FormFile(new MemoryStream(source.ImageData), 0, source.ImageData.Length, "Image", source.ImageName) { Headers = new HeaderDictionary() }));
 
             CreateMap<CategoryViewModel, Category>().ReverseMap();
             CreateMap<SupplierViewModel, Supplier>().ReverseMap();

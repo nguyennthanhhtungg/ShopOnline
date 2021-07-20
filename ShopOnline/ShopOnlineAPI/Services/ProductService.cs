@@ -1,7 +1,9 @@
-﻿using ShopOnlineAPI.Models;
+﻿using Microsoft.AspNetCore.Http;
+using ShopOnlineAPI.Models;
 using ShopOnlineAPI.Repositories;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
