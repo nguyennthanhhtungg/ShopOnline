@@ -56,7 +56,7 @@ namespace ShopOnlineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("GetProductImageById")]
+        [Route("ProductImageById")]
         public async Task<IActionResult> ProductImageById([FromQuery]int id)
         {
             var product = await productService.GetById(id);
