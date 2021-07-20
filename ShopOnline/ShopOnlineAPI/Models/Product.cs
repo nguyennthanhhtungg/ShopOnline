@@ -32,6 +32,7 @@ namespace ShopOnlineAPI.Models
         public string ProductNameNoSign { get; set; }
         public string ImageName { get; set; }
         public byte[] ImageData { get; set; }
+        public string ImageType { get; set; }
 
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }

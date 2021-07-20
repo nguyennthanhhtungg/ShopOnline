@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using ShopOnlineAPI.Models;
 using ShopOnlineAPI.Services;
+using ShopOnlineAPI.Ultilities;
 using ShopOnlineAPI.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -53,6 +54,18 @@ namespace ShopOnlineAPI.Controllers
 
             return Ok(productViewModelMapped);
         }
+
+        [HttpGet]
+        [Route("GetProductImageById")]
+        public async Task<IActionResult> GetProductImageById([FromQuery]int id)
+        {
+            var product = await productService.GetById(id);
+
+            ProductViewModel productViewModelMapped = mapper.Map<ProductViewModel>(product);
+
+            return File(productViewModelMapped.Image.OpenReadStream(), productViewModelMapped.Image.ContentType);
+        }
+
 
         [HttpPost]
         public async Task<IActionResult> Add([FromForm] ProductViewModel productViewModel)

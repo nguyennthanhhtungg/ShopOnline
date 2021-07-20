@@ -203,6 +203,11 @@ namespace ShopOnlineAPI.Models
                     .HasMaxLength(100)
                     .IsUnicode(false);
 
+                entity.Property(e => e.ImageType)
+                    .IsRequired()
+                    .HasMaxLength(50)
+                    .IsUnicode(false);
+
                 entity.Property(e => e.ManufacturingDate).HasColumnType("datetime");
 
                 entity.Property(e => e.Origin)
