@@ -11,13 +11,12 @@ namespace ShopOnlineAPI.Models
         {
             Comments = new HashSet<Comment>();
             OrderDetails = new HashSet<OrderDetail>();
-            ProductImages = new HashSet<ProductImage>();
         }
 
         public int ProductId { get; set; }
         public string ProductName { get; set; }
-        public string ShortDiscription { get; set; }
-        public string DetailDiscription { get; set; }
+        public string ShortDescription { get; set; }
+        public string DetailDescription { get; set; }
         public string ProductCode { get; set; }
         public DateTime? ExpiryDate { get; set; }
         public DateTime ManufacturingDate { get; set; }
@@ -31,11 +30,10 @@ namespace ShopOnlineAPI.Models
         public int SupplierId { get; set; }
         public double Tax { get; set; }
         public string ProductNameNoSign { get; set; }
+        public string ImageName { get; set; }
+        public byte[] ImageData { get; set; }
 
-        public virtual Category Category { get; set; }
-        public virtual Supplier Supplier { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public virtual ICollection<ProductImage> ProductImages { get; set; }
     }
 }

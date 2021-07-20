@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using ShopOnlineAPI.Models;
 using ShopOnlineAPI.Services;
 using ShopOnlineAPI.ViewModels;
@@ -54,7 +55,7 @@ namespace ShopOnlineAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add([FromBody] ProductViewModel productViewModel)
+        public async Task<IActionResult> Add([FromForm] ProductViewModel productViewModel)
         {
             if (!ModelState.IsValid)
             {
@@ -86,7 +87,7 @@ namespace ShopOnlineAPI.Controllers
 
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] ProductViewModel productViewModel)
+        public async Task<IActionResult> Update([FromForm] ProductViewModel productViewModel)
         {
             if (!ModelState.IsValid)
             {

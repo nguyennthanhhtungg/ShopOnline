@@ -24,7 +24,6 @@ namespace ShopOnlineAPI.Models
         public virtual DbSet<Order> Orders { get; set; }
         public virtual DbSet<OrderDetail> OrderDetails { get; set; }
         public virtual DbSet<Product> Products { get; set; }
-        public virtual DbSet<ProductImage> ProductImages { get; set; }
         public virtual DbSet<Supplier> Suppliers { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -193,9 +192,16 @@ namespace ShopOnlineAPI.Models
 
                 entity.Property(e => e.AttachedGift).HasMaxLength(200);
 
-                entity.Property(e => e.DetailDiscription).IsRequired();
+                entity.Property(e => e.DetailDescription).IsRequired();
 
                 entity.Property(e => e.ExpiryDate).HasColumnType("datetime");
+
+                entity.Property(e => e.ImageData).IsRequired();
+
+                entity.Property(e => e.ImageName)
+                    .IsRequired()
+                    .HasMaxLength(100)
+                    .IsUnicode(false);
 
                 entity.Property(e => e.ManufacturingDate).HasColumnType("datetime");
 
@@ -216,36 +222,9 @@ namespace ShopOnlineAPI.Models
                     .IsRequired()
                     .HasMaxLength(200);
 
-                entity.Property(e => e.ShortDiscription)
+                entity.Property(e => e.ShortDescription)
                     .IsRequired()
                     .HasMaxLength(500);
-
-                entity.HasOne(d => d.Category)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.CategoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Product_Category");
-
-                entity.HasOne(d => d.Supplier)
-                    .WithMany(p => p.Products)
-                    .HasForeignKey(d => d.SupplierId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Product_Supplier");
-            });
-
-            modelBuilder.Entity<ProductImage>(entity =>
-            {
-                entity.ToTable("ProductImage");
-
-                entity.Property(e => e.ImageUrl)
-                    .IsRequired()
-                    .HasMaxLength(100)
-                    .IsUnicode(false);
-
-                entity.HasOne(d => d.Product)
-                    .WithMany(p => p.ProductImages)
-                    .HasForeignKey(d => d.ProductId)
-                    .HasConstraintName("FK_ProductImage_Product");
             });
 
             modelBuilder.Entity<Supplier>(entity =>
