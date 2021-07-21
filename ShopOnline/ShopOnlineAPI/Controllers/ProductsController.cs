@@ -1,12 +1,16 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using ShopOnlineAPI.Extensions;
 using ShopOnlineAPI.Models;
 using ShopOnlineAPI.Services;
 using ShopOnlineAPI.Ultilities;
 using ShopOnlineAPI.ViewModels;
 using System;
 using System.Collections.Generic;
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.Threading.Tasks;
 
 namespace ShopOnlineAPI.Controllers
@@ -17,11 +21,13 @@ namespace ShopOnlineAPI.Controllers
     {
         private readonly IProductService productService;
         private readonly IMapper mapper;
+        private readonly IConfiguration configuration;
 
-        public ProductsController(IProductService productService, IMapper mapper)
+        public ProductsController(IProductService productService, IMapper mapper, IConfiguration configuration)
         {
             this.productService = productService;
             this.mapper = mapper;
+            this.configuration = configuration;
         }
 
         [HttpGet]
@@ -35,8 +41,8 @@ namespace ShopOnlineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("SearchProduct")]
-        public async Task<IActionResult> SearchProduct(string keyWords)
+        [Route("ProductBySearching")]
+        public async Task<IActionResult> ProductBySearching(string keyWords)
         {
             var productList = await productService.GetProductListByKeyWords(keyWords);
 
@@ -56,14 +62,19 @@ namespace ShopOnlineAPI.Controllers
         }
 
         [HttpGet]
-        [Route("ProductImageById")]
-        public async Task<IActionResult> ProductImageById([FromQuery]int id)
+        [Route("ProductImageByIdAndDimension")]
+        public async Task<IActionResult> ProductImageByIdAndDimension([FromQuery]int id, [FromQuery] int width, [FromQuery] int height)
         {
             var product = await productService.GetById(id);
 
             ProductViewModel productViewModelMapped = mapper.Map<ProductViewModel>(product);
 
-            return File(productViewModelMapped.Image.OpenReadStream(), productViewModelMapped.Image.ContentType);
+            using (var image = Image.FromStream(productViewModelMapped.Image.OpenReadStream(), true, true))
+            {
+                var newImage = image.Resize(width, height);
+
+                return File(newImage.ToByteArray(ImageFormat.Bmp), productViewModelMapped.Image.ContentType);
+            }
         }
 
 
@@ -75,6 +86,15 @@ namespace ShopOnlineAPI.Controllers
                 return BadRequest(new
                 {
                     ErrorMessage = "Product Info is invalid!"
+                });
+            }
+
+            //Check whether image size is too large or not (must be less than 100000 bytes)
+            if(productViewModel.Image.Length > long.Parse(configuration["MaxImageSize"]))
+            {
+                return BadRequest(new
+                {
+                    ErrorMessage = "Image Size is too large (must be less than 100000 bytes)!"
                 });
             }
 
