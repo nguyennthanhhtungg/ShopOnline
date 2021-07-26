@@ -1,12 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using ShopOnlineAPI.CustomExceptions;
 using ShopOnlineAPI.Models;
 using ShopOnlineAPI.Services;
 using ShopOnlineAPI.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ShopOnlineAPI.Controllers
@@ -49,10 +51,11 @@ namespace ShopOnlineAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    ErrorMessage = "Order Info is invalid!"
-                });
+                throw new HttpStatusCodeException(HttpStatusCode.BadRequest, "Order Info is invalid!");
+                //return BadRequest(new
+                //{
+                //    ErrorMessage = "Order Info is invalid!"
+                //});
             }
 
             try
@@ -64,7 +67,8 @@ namespace ShopOnlineAPI.Controllers
 
                 if(order.OrderId == 0)
                 {
-                    return Ok("Sorry, Employee is busy!");
+                    throw new HttpStatusCodeException(HttpStatusCode.NotFound, "Sorry, Employee is busy. Please place this order later!");
+                    //return Ok("Sorry, Employee is busy!");
                 }
                 else
                 {
@@ -74,13 +78,9 @@ namespace ShopOnlineAPI.Controllers
                     return Ok(orderViewModelMapped);
                 }
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Error: {e}");
-                return BadRequest(new
-                {
-                    ErrorMessage = "Order Info is invalid!"
-                });
+                throw ex;
             }
         }
 
