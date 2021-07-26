@@ -90,10 +90,11 @@ namespace ShopOnlineAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    ErrorMessage = "Order Info is invalid!"
-                });
+                throw new HttpStatusCodeException(HttpStatusCode.BadRequest, "Order Info is invalid!");
+                //return BadRequest(new
+                //{
+                //    ErrorMessage = "Order Info is invalid!"
+                //});
             }
 
             try
@@ -106,13 +107,9 @@ namespace ShopOnlineAPI.Controllers
 
                 return Ok(orderViewModelMapped);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Error: {e}");
-                return BadRequest(new
-                {
-                    ErrorMessage = "Order Info is invalid!"
-                });
+                throw ex;
             }
         }
     }

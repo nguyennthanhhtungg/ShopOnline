@@ -124,10 +124,11 @@ namespace ShopOnlineAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    ErrorMessage = "Product Info is invalid!"
-                });
+                throw new HttpStatusCodeException(HttpStatusCode.BadRequest, "Product Info is invalid!");
+                //return BadRequest(new
+                //{
+                //    ErrorMessage = "Product Info is invalid!"
+                //});
             }
 
             try
@@ -140,13 +141,9 @@ namespace ShopOnlineAPI.Controllers
 
                 return Ok(productViewModelMapped);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Error: {e}");
-                return BadRequest(new
-                {
-                    ErrorMessage = "Product Info is invalid!"
-                });
+                throw ex;
             }
         }
     }
