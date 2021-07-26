@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using ShopOnlineAPI.CustomExceptions;
 using ShopOnlineAPI.Extensions;
 using ShopOnlineAPI.Models;
 using ShopOnlineAPI.Services;
@@ -11,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace ShopOnlineAPI.Controllers
@@ -83,19 +85,21 @@ namespace ShopOnlineAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    ErrorMessage = "Product Info is invalid!"
-                });
+                throw new HttpStatusCodeException(HttpStatusCode.BadRequest, "Product Info is invalid!");
+                //return BadRequest(new
+                //{
+                //    ErrorMessage = "Product Info is invalid!"
+                //});
             }
 
             //Check whether image size is too large or not (must be less than 100000 bytes)
             if(productViewModel.Image.Length > long.Parse(configuration["MaxImageSize"]))
             {
-                return BadRequest(new
-                {
-                    ErrorMessage = "Image Size is too large (must be less than 100000 bytes)!"
-                });
+                throw new HttpStatusCodeException(HttpStatusCode.BadRequest, "Image Size is too large (must be less than 100000 bytes)!");
+                //return BadRequest(new
+                //{
+                //    ErrorMessage = "Image Size is too large (must be less than 100000 bytes)!"
+                //});
             }
 
             try
@@ -108,13 +112,9 @@ namespace ShopOnlineAPI.Controllers
 
                 return Ok(productViewModelMapped);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Error: {e}");
-                return BadRequest(new
-                {
-                    ErrorMessage = "Product Info is invalid!"
-                });
+                throw ex;
             }
         }
 
@@ -124,10 +124,11 @@ namespace ShopOnlineAPI.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return BadRequest(new
-                {
-                    ErrorMessage = "Product Info is invalid!"
-                });
+                throw new HttpStatusCodeException(HttpStatusCode.BadRequest, "Product Info is invalid!");
+                //return BadRequest(new
+                //{
+                //    ErrorMessage = "Product Info is invalid!"
+                //});
             }
 
             try
@@ -140,13 +141,9 @@ namespace ShopOnlineAPI.Controllers
 
                 return Ok(productViewModelMapped);
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine($"Error: {e}");
-                return BadRequest(new
-                {
-                    ErrorMessage = "Product Info is invalid!"
-                });
+                throw ex;
             }
         }
     }
